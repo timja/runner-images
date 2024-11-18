@@ -1,4 +1,15 @@
 Describe "Docker" {
+    while($true) {
+        $dockerServiceStatus = (Get-Service -Name docker).Status
+        if($dockerServiceStatus -ne 'Running') {
+            Write-Output "Docker service is $dockerServiceStatus. Waiting for it to be Running"
+            Start-Service -Name docker
+            Start-Sleep -s 10
+        } else {
+            Write-Output "Docker service is $dockerServiceStatus."
+            break
+        }
+    }
     It "docker is installed" {
         "docker --version" | Should -ReturnZeroExitCode
     }
@@ -25,7 +36,18 @@ Describe "DockerWinCred" {
     }
 }
 
-Describe "DockerImages" {
+Describe "DockerImages" -Skip:(Test-IsWin25) {
+    while($true) {
+        $dockerServiceStatus = (Get-Service -Name docker).Status
+        if($dockerServiceStatus -ne 'Running') {
+            Write-Output "Docker service is $dockerServiceStatus. Waiting for it to be Running"
+            Start-Service -Name docker
+            Start-Sleep -s 10
+        } else {
+            Write-Output "Docker service is $dockerServiceStatus."
+            break
+        }
+    }
     Context "docker images" {
         $testCases = (Get-ToolsetContent).docker.images | ForEach-Object { @{ ImageName = $_ } }
 

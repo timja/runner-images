@@ -18,9 +18,18 @@ foreach ($feature in $windowsFeatures) {
             IncludeAllSubFeature   = [System.Convert]::ToBoolean($feature.includeAllSubFeatures)
             IncludeManagementTools = [System.Convert]::ToBoolean($feature.includeManagementTools)
         }
-        $result = Install-WindowsFeature @arguments
 
+        if ($feature.name -eq "NET-Framework-Features") {
+            $arguments += @{ LogPath = $(Join-Path $env:IMAGE_FOLDER "NET-Framework-Features.log") }
+        }
+        $result = Install-WindowsFeature @arguments
         $resultSuccess = $result.Success
+    }
+
+    if ($feature.name -eq "NET-Framework-Features") {
+        $dotNetFeatureLog = Get-Content -Path $(Join-Path $env:IMAGE_FOLDER "NET-Framework-Features.log")
+        Write-Host "The log of NET-Framework-Features"
+        Write-Host $dotNetFeatureLog
     }
 
     if ($resultSuccess) {

@@ -193,4 +193,11 @@ $disableTaskNames | ForEach-Object {
     Disable-ScheduledTask @PSItem -ErrorAction Ignore
 } | Out-Null
 
+if (Test-IsWin25) {
+    If (Test-Path -Path "C:\Windows\Installer") {
+        Write-Host "Removing C:\Windows\Installer"
+        Remove-Item "C:\Windows\Installer" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+    }
+}
+
 Write-Host "Configure-System.ps1 - completed"

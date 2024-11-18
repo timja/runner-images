@@ -28,15 +28,17 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # disable TSVNCache.exe
-$registryKeyPath = 'HKCU:\Software\TortoiseSVN'
-if (-not(Test-Path -Path $registryKeyPath)) {
-    New-Item -Path $registryKeyPath -ItemType Directory -Force
-}
+if (-not (Test-IsWin25)) {
+    $registryKeyPath = 'HKCU:\Software\TortoiseSVN'
+    if (-not(Test-Path -Path $registryKeyPath)) {
+        New-Item -Path $registryKeyPath -ItemType Directory -Force
+    }
 
-New-ItemProperty -Path $registryKeyPath -Name CacheType -PropertyType DWORD -Value 0
-reg.exe copy HKCU\Software\TortoiseSVN HKLM\DEFAULT\Software\TortoiseSVN /s
-if ($LASTEXITCODE -ne 0) {
-    throw "Failed to copy HKCU\Software\TortoiseSVN to HKLM\DEFAULT\Software\TortoiseSVN"
+    New-ItemProperty -Path $registryKeyPath -Name CacheType -PropertyType DWORD -Value 0
+    reg.exe copy HKCU\Software\TortoiseSVN HKLM\DEFAULT\Software\TortoiseSVN /s
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to copy HKCU\Software\TortoiseSVN to HKLM\DEFAULT\Software\TortoiseSVN"
+    }
 }
 
 Dismount-RegistryHive "HKLM\DEFAULT"
